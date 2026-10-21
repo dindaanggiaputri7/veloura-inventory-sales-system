@@ -1,7 +1,8 @@
 
 <?php
-use App\Http\Controllers\UserController;
+
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -9,7 +10,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Dashboard utama: arahkan pengguna sesuai role
+/*
+|--------------------------------------------------------------------------
+| Dashboard utama
+|--------------------------------------------------------------------------
+*/
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
@@ -28,49 +33,84 @@ Route::get('/dashboard', function () {
     Auth::logout();
 
     return redirect()->route('login');
-})->middleware('auth')->name('dashboard');
+})->middleware(['auth', 'active.account'])->name('dashboard');
 
-// Dashboard Admin
+/*
+|--------------------------------------------------------------------------
+| Dashboard Admin
+|--------------------------------------------------------------------------
+*/
 Route::get('/admin/dashboard', function () {
     abort_unless(Auth::user()->role === 'admin', 403);
 
     return view('admin.dashboard');
-})->middleware('auth')->name('admin.dashboard');
+})->middleware(['auth', 'active.account'])->name('admin.dashboard');
 
-Route::get('/admin/users', [UserController::class, 'index'])
-    ->middleware('auth')
-    ->name('admin.users.index');
+/*
+|--------------------------------------------------------------------------
+| Manajemen Akun Staff — khusus Admin
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'active.account'])->group(function () {
+    Route::get('/admin/users', [UserController::class, 'index'])
+        ->name('admin.users.index');
 
-// Dashboard Staff
+    Route::get('/admin/users/create', [UserController::class, 'create'])
+        ->name('admin.users.create');
+
+    Route::post('/admin/users', [UserController::class, 'store'])
+        ->name('admin.users.store');
+
+    Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])
+        ->whereNumber('id')
+        ->name('admin.users.edit');
+
+    Route::put('/admin/users/{id}', [UserController::class, 'update'])
+        ->whereNumber('id')
+        ->name('admin.users.update');
+
+    Route::patch('/admin/users/{id}/toggle-active', [
+        UserController::class,
+        'toggleActive',
+    ])->whereNumber('id')->name('admin.users.toggle-active');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard Staff
+|--------------------------------------------------------------------------
+*/
 Route::get('/staff/dashboard', function () {
     abort_unless(Auth::user()->role === 'staff', 403);
 
-    return view('staff.dashboard');
-})->middleware('auth')->name('staff.dashboard');
+    return view('dashboard');
+})->middleware(['auth', 'active.account'])->name('staff.dashboard');
 
-// Dashboard Customer
+/*
+|--------------------------------------------------------------------------
+| Dashboard Customer
+|--------------------------------------------------------------------------
+*/
 Route::get('/customer/dashboard', function () {
     abort_unless(Auth::user()->role === 'customer', 403);
 
     return view('customer.dashboard');
-})->middleware('auth')->name('customer.dashboard');
+})->middleware(['auth', 'active.account'])->name('customer.dashboard');
 
-// Profile bawaan Laravel Breeze
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [
-        ProfileController::class,
-        'edit'
-    ])->name('profile.edit');
+/*
+|--------------------------------------------------------------------------
+| Profile Laravel Breeze
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'active.account'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
 
-    Route::patch('/profile', [
-        ProfileController::class,
-        'update'
-    ])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
 
-    Route::delete('/profile', [
-        ProfileController::class,
-        'destroy'
-    ])->name('profile.destroy');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

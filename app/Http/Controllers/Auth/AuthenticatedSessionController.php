@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-
 class AuthenticatedSessionController extends Controller
 {
     public function create(): View
@@ -19,11 +18,26 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Memeriksa email dan password.
         $request->authenticate();
-        $request->session()->regenerate();
 
         $user = Auth::user();
 
+        // Akun nonaktif tidak boleh login.
+        if (!$user->is_active) {
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun kamu sedang dinonaktifkan. Silakan hubungi administrator.',
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        // Arahkan pengguna sesuai role.
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
@@ -36,7 +50,11 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('customer.dashboard');
         }
 
+        // Tolak role yang tidak dikenali.
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('login')->withErrors([
             'email' => 'Role akun tidak valid. Silakan hubungi administrator.',
