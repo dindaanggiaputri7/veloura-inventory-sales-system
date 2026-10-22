@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,12 +41,9 @@ Route::get('/dashboard', function () {
 | Dashboard Admin
 |--------------------------------------------------------------------------
 */
-Route::get('/admin/dashboard', function () {
-    abort_unless(Auth::user()->role === 'admin', 403);
-
-    return view('admin.dashboard');
-})->middleware(['auth', 'active.account'])->name('admin.dashboard');
-
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'active.account'])
+    ->name('admin.dashboard');
 /*
 |--------------------------------------------------------------------------
 | Manajemen Akun Staff — khusus Admin
