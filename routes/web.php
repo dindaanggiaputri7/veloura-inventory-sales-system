@@ -6,10 +6,16 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Models\Product;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    $products = Product::query()
+        ->latest()
+        ->take(8)
+        ->get();
+
+    return view('welcome', compact('products'));
+})->name('home');
 
 /*
 |--------------------------------------------------------------------------
