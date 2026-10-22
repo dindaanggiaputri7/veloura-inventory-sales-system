@@ -9,6 +9,12 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Product;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\SaleController;
+use App\Http\Controllers\Staff\ProfileController as StaffProfileController;
 
 
 Route::get('/', function () {
@@ -57,6 +63,16 @@ Route::get('/dashboard', function () {
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'active.account'])
     ->name('admin.dashboard');
+Route::middleware(['auth', 'active.account'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('categories', CategoryController::class);
+        Route::resource('products', ProductController::class);
+        Route::resource('suppliers', SupplierController::class);
+        Route::resource('purchases', PurchaseController::class);
+        Route::resource('sales', SaleController::class);
+    });
 /*
 |--------------------------------------------------------------------------
 | Manajemen Akun Staff — khusus Admin
@@ -91,14 +107,29 @@ Route::middleware(['auth', 'active.account'])->group(function () {
 | Dashboard Staff
 |--------------------------------------------------------------------------
 */
-Route::get('/staff/dashboard', [StaffDashboardController::class, 'index'])
-    ->middleware(['auth', 'active.account'])
-    ->name('staff.dashboard');
-/*
-|--------------------------------------------------------------------------
-| Dashboard Customer
-|--------------------------------------------------------------------------
-*/
+Route::middleware(['auth', 'active.account'])
+    ->prefix('staff')
+    ->name('staff.')
+    ->group(function () {
+        Route::get('/dashboard', [StaffDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::get('/products', [StaffDashboardController::class, 'products'])
+            ->name('products.index');
+
+        Route::get('/sales', [StaffDashboardController::class, 'sales'])
+            ->name('sales.index');
+
+        Route::get('/transactions', [StaffDashboardController::class, 'transactions'])
+            ->name('transactions.index');
+        
+        Route::get('/profile', [StaffProfileController::class, 'edit'])
+            ->name('profile');
+
+        Route::patch('/profile', [StaffProfileController::class, 'update'])
+            ->name('profile.update');
+        });
+
 
 /*
 |--------------------------------------------------------------------------

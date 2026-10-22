@@ -1,127 +1,126 @@
+@extends('admin.layout')
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Staff | Veloura</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #F8F1EB;
-            color: #342421;
-        }
-        header {
-            background: #5B1726;
-            color: white;
-            padding: 24px 7%;
-        }
-        header h1 { margin: 0 0 8px; letter-spacing: 2px; }
-        header p { margin: 0; color: #E8CFC9; }
-        main { max-width: 760px; margin: 32px auto; padding: 0 20px; }
-        .back { display: inline-block; margin-bottom: 20px; color: #5B1726; }
-        .panel {
-            background: white;
-            border: 1px solid #E8CFC9;
-            border-radius: 14px;
-            padding: 28px;
-        }
-        h2 { color: #5B1726; margin-top: 0; }
-        .muted { color: #75645F; line-height: 1.5; }
-        label { display: block; margin: 18px 0 8px; font-weight: bold; }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #E8CFC9;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 16px;
-            border: 0;
-            border-radius: 8px;
-            background: #5B1726;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .secondary { background: #E8CFC9; color: #342421; }
-        .actions { display: flex; gap: 10px; margin-top: 24px; }
-        .error { color: #A12626; font-size: 14px; margin-top: 6px; }
-        .notice {
-            padding: 12px;
-            border-radius: 8px;
-            background: #F8F1EB;
-            margin-top: 16px;
-        }
-    </style>
-</head>
-<body>
-<header>
-    <h1>VELOURA</h1>
-    <p>Manajemen Akun Staff</p>
-</header>
+@section('title', 'Tambah Staff')
+@section('page-heading', 'Tambah Staff')
+@section('page-description', 'Daftarkan akun pegawai baru ke sistem Veloura.')
 
-<main>
-    <a class="back" href="{{ route('admin.users.index') }}">
-        &larr; Kembali ke Daftar Staff
-    </a>
+@section('content')
+<div class="panel" style="max-width:850px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+        <div style="width:46px;height:46px;border-radius:12px;background:#f5e9e7;color:#54252f;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:700">
+            +
+        </div>
+        <div>
+            <h2 style="font-size:20px;margin:0 0 5px;color:#392b2d">
+                Informasi Staff
+            </h2>
+            <p style="font-size:13px;color:#88797a;margin:0">
+                Isi data akun yang akan digunakan untuk mengakses sistem.
+            </p>
+        </div>
+    </div>
 
-    <section class="panel">
-        <h2>Tambah Staff</h2>
-        <p class="muted">
-            Masukkan data pegawai yang akan diberikan akses ke sistem Veloura.
-        </p>
+    @if($errors->any())
+        <div class="alert alert-danger" style="margin-bottom:20px">
+            <strong>Periksa kembali data berikut:</strong>
+            <ul style="margin:8px 0 0;padding-left:20px">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        @if ($errors->any())
-            <div class="notice">
-                <strong>Periksa kembali data berikut:</strong>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li class="error">{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <form method="POST" action="{{ route('admin.users.store') }}">
+        @csrf
 
-        <form method="POST" action="{{ route('admin.users.store') }}">
-            @csrf
-
-            <label for="name">Nama lengkap</label>
-            <input id="name" name="name" type="text"
-                   value="{{ old('name') }}" required maxlength="255">
-            @error('name') <p class="error">{{ $message }}</p> @enderror
-
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email"
-                   value="{{ old('email') }}" required maxlength="255">
-            @error('email') <p class="error">{{ $message }}</p> @enderror
-
-            <label for="password">Password sementara</label>
-            <input id="password" name="password" type="password"
-                   required minlength="8" autocomplete="new-password">
-            @error('password') <p class="error">{{ $message }}</p> @enderror
-
-            <label for="password_confirmation">Konfirmasi password</label>
-            <input id="password_confirmation" name="password_confirmation"
-                   type="password" required minlength="8"
-                   autocomplete="new-password">
-
-            <div class="notice">
-                Role akun akan ditetapkan otomatis menjadi <strong>Staff</strong>.
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div style="grid-column:1/-1">
+                <label for="name">Nama lengkap <span style="color:#a52d36">*</span></label>
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value="{{ old('name') }}"
+                    placeholder="Masukkan nama lengkap staff"
+                    required
+                    autocomplete="name"
+                    style="width:100%;margin-top:8px"
+                >
+                @error('name')
+                    <p style="color:#a52d36;font-size:12px;margin-top:6px">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="actions">
-                <button class="button" type="submit">Simpan Staff</button>
-                <a class="button secondary"
-                   href="{{ route('admin.users.index') }}">Batal</a>
+            <div style="grid-column:1/-1">
+                <label for="email">Alamat email <span style="color:#a52d36">*</span></label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="contoh@veloura.com"
+                    required
+                    autocomplete="email"
+                    style="width:100%;margin-top:8px"
+                >
+                @error('email')
+                    <p style="color:#a52d36;font-size:12px;margin-top:6px">{{ $message }}</p>
+                @enderror
             </div>
-        </form>
-    </section>
-</main>
-</body>
-</html>
+
+            <div>
+                <label for="password">Password sementara <span style="color:#a52d36">*</span></label>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="Minimal 8 karakter"
+                    required
+                    autocomplete="new-password"
+                    style="width:100%;margin-top:8px"
+                >
+                @error('password')
+                    <p style="color:#a52d36;font-size:12px;margin-top:6px">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="password_confirmation">Konfirmasi password <span style="color:#a52d36">*</span></label>
+                <input
+                    id="password_confirmation"
+                    type="password"
+                    name="password_confirmation"
+                    placeholder="Ulangi password"
+                    required
+                    autocomplete="new-password"
+                    style="width:100%;margin-top:8px"
+                >
+            </div>
+        </div>
+
+        <div style="margin-top:26px;padding-top:20px;border-top:1px solid #eee4df;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                Batal
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Simpan Staff
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+@media(max-width:600px) {
+    .panel {
+        padding:18px !important;
+    }
+    .panel form > div:first-of-type {
+        grid-template-columns:1fr !important;
+    }
+    .panel form > div:first-of-type > div {
+        grid-column:1 !important;
+    }
+}
+</style>
+@endsection
