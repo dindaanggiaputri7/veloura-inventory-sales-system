@@ -530,24 +530,10 @@
                                 Rp {{ number_format((float) $product->selling_price, 0, ',', '.') }}
                             </div>
 
-                            @auth
-                                @if (auth()->user()->role === 'customer')
-                                    <a href="{{ route('customer.dashboard') }}"
-                                       class="btn product-action">
-                                        Lihat Produk
-                                    </a>
-                                @else
-                                    <a href="{{ route('dashboard') }}"
-                                       class="btn product-action">
-                                        Buka Dashboard
-                                    </a>
-                                @endif
-                            @else
-                                <a href="{{ route('login') }}"
-                                   class="btn product-action">
-                                    Masuk untuk Memesan
-                                </a>
-                            @endauth
+                            <a href="{{ route('products.show', $product->id) }}"
+                                class="btn product-action">
+                                    Lihat Detail &nbsp; →
+                            </a>
                         </div>
                     </article>
                 @empty

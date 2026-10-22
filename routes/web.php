@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('welcome', compact('products'));
 })->name('home');
 
+Route::get('/produk/{product}', function (\App\Models\Product $product) {
+    return view('products.show', compact('product'));
+})->name('products.show');
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard utama
