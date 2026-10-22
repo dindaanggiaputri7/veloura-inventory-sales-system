@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Product;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+
 
 Route::get('/', function () {
     $products = Product::query()
@@ -88,22 +91,41 @@ Route::middleware(['auth', 'active.account'])->group(function () {
 | Dashboard Staff
 |--------------------------------------------------------------------------
 */
-Route::get('/staff/dashboard', function () {
-    abort_unless(Auth::user()->role === 'staff', 403);
-
-    return view('dashboard');
-})->middleware(['auth', 'active.account'])->name('staff.dashboard');
+Route::get('/staff/dashboard', [StaffDashboardController::class, 'index'])
+    ->middleware(['auth', 'active.account'])
+    ->name('staff.dashboard');
+/*
+|--------------------------------------------------------------------------
+| Dashboard Customer
+|--------------------------------------------------------------------------
+*/
 
 /*
 |--------------------------------------------------------------------------
 | Dashboard Customer
 |--------------------------------------------------------------------------
 */
-Route::get('/customer/dashboard', function () {
-    abort_unless(Auth::user()->role === 'customer', 403);
 
-    return view('customer.dashboard');
-})->middleware(['auth', 'active.account'])->name('customer.dashboard');
+
+Route::middleware(['auth', 'active.account'])
+    ->prefix('customer')
+    ->name('customer.')
+    ->group(function () {
+        Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/catalog', [CustomerController::class, 'catalog'])->name('catalog');
+        Route::get('/products/{id}', [CustomerController::class, 'product'])->whereNumber('id')->name('products.show');
+        Route::get('/cart', [CustomerController::class, 'cart'])->name('cart');
+        Route::post('/cart/{id}', [CustomerController::class, 'addToCart'])->whereNumber('id')->name('cart.add');
+        Route::patch('/cart/{id}', [CustomerController::class, 'updateCart'])->whereNumber('id')->name('cart.update');
+        Route::delete('/cart/{id}', [CustomerController::class, 'removeFromCart'])->whereNumber('id')->name('cart.remove');
+        Route::get('/checkout', [CustomerController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout', [CustomerController::class, 'placeOrder'])->name('checkout.store');
+        Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
+        Route::get('/orders/{id}', [CustomerController::class, 'orderDetail'])->whereNumber('id')->name('order.show');
+        Route::get('/transactions', [CustomerController::class, 'transactions'])->name('transactions');
+        Route::get('/profile', [CustomerController::class, 'profile'])->name('profile');
+        Route::put('/profile', [CustomerController::class, 'updateProfile'])->name('profile.update');
+    });
 
 /*
 |--------------------------------------------------------------------------

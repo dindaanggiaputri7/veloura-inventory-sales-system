@@ -1,153 +1,50 @@
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veloura Parfum | Customer</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #F8F1EB;
-            color: #342421;
-        }
-
-        header {
-            background: #5B1726;
-            color: white;
-            padding: 22px 7%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 25px;
-            letter-spacing: 2px;
-        }
-
-        header p {
-            margin: 6px 0 0;
-            color: #E8CFC9;
-        }
-
-        main {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .welcome {
-            background: white;
-            padding: 32px;
-            border-radius: 14px;
-            border: 1px solid #E8CFC9;
-        }
-
-        .welcome h2 {
-            color: #5B1726;
-            margin-top: 0;
-        }
-
-        .button {
-            display: inline-block;
-            background: #5B1726;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 7px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
-            margin-top: 24px;
-        }
-
-        .feature {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #E8CFC9;
-        }
-
-        .feature h3 {
-            color: #5B1726;
-        }
-
-        footer {
-            text-align: center;
-            padding: 25px;
-            color: #74615C;
-        }
-    </style>
-</head>
-
-<body>
-    <header>
-        <div>
-            <h1>VELOURA</h1>
-            <p>A Scent That Becomes You.</p>
-        </div>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="button">
-                Logout
-            </button>
-        </form>
-    </header>
-
-    <main>
-        <section class="welcome">
-            <h2>Selamat datang, {{ Auth::user()->name }}!</h2>
-
-            <p>
-                Temukan aroma yang mencerminkan kepribadianmu
-                bersama Veloura Parfum.
-            </p>
-
-            <p>
-                Kamu login sebagai Customer.
-            </p>
-        </section>
-
-        <section class="features">
-            <div class="feature">
-                <h3>Katalog Parfum</h3>
-                <p>Lihat koleksi parfum Veloura yang tersedia.</p>
-                <a href="#" class="button">Lihat Katalog</a>
-            </div>
-
-            <div class="feature">
-                <h3>Keranjang</h3>
-                <p>Produk pilihanmu nantinya dapat dikelola di sini.</p>
-                <a href="#" class="button">Lihat Keranjang</a>
-            </div>
-
-            <div class="feature">
-                <h3>Pesanan Saya</h3>
-                <p>Pantau pesanan dan status pembayaranmu.</p>
-                <a href="#" class="button">Lihat Pesanan</a>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        &copy; {{ date('Y') }} Veloura Parfum. All rights reserved.
-    </footer>
-</body>
-</html>
+@extends('customer.layout')
+@section('title','Dashboard')
+@section('content')
+<section class="welcome">
+<div class="welcome-copy">
+<div class="eyebrow">Selamat datang di Veloura</div>
+<h1>Selamat datang, {{ auth()->user()->name }}!</h1>
+<p>Temukan aroma yang paling menggambarkan dirimu. Jelajahi koleksi parfum pilihan dan pantau pesananmu dengan mudah di satu tempat.</p>
+<a class="btn" href="{{ route('customer.catalog') }}">Lihat Katalog &nbsp; →</a>
+</div>
+<img class="welcome-art" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=900&q=85" alt="Botol parfum elegan">
+</section>
+<div class="stats">
+<div class="stat"><div class="label">Total Pesanan</div><div class="number">{{ $ordersCount }}</div><div class="muted">Semua pesanan kamu</div></div>
+<div class="stat"><div class="label">Pesanan Diproses</div><div class="number">{{ $pendingCount }}</div><div class="muted">Pesanan yang masih berjalan</div></div>
+<div class="stat"><div class="label">Kategori Parfum</div><div class="number">{{ $categories->count() }}</div><div class="muted">Pilihan aroma untukmu</div></div>
+</div>
+<div class="section-head"><div><h2>Kategori Populer</h2><div class="muted">Pilih aroma sesuai kepribadianmu</div></div><a class="btn btn-light btn-sm" href="{{ route('customer.catalog') }}">Lihat Semua</a></div>
+<div class="categories">
+@forelse($categories as $category)
+<a class="category" href="{{ route('customer.catalog', ['category' => $category->id]) }}">
+<img src="{{ ['https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=500&q=80'][$loop->index % 4] }}" alt="{{ $category->name }}">
+<strong>{{ $category->name }} <span style="float:right">→</span></strong>
+</a>
+@empty
+<div class="panel">Kategori belum tersedia.</div>
+@endforelse
+</div>
+<div class="section-head"><div><h2>Rekomendasi Untukmu</h2><div class="muted">Koleksi parfum yang bisa kamu jelajahi</div></div><a class="btn btn-light btn-sm" href="{{ route('customer.catalog') }}">Jelajahi Koleksi</a></div>
+<div class="products">
+@forelse($products as $product)
+<article class="product-card">
+<img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=650&q=80" alt="{{ $product->name }}">
+<div class="product-info"><span class="badge">Veloura Signature</span><h3 style="margin-top:9px">{{ $product->name }}</h3><div class="price">Rp {{ number_format($product->selling_price,0,',','.') }}</div><p class="muted">Stok tersedia: {{ $product->stock }}</p><a class="btn btn-sm" href="{{ route('customer.products.show', $product->id) }}">Lihat Detail</a></div>
+</article>
+@empty
+<div class="panel">Belum ada produk tersedia. Silakan kembali lagi nanti.</div>
+@endforelse
+</div>
+<div class="section-head"><div><h2>Pesanan Terbaru</h2><div class="muted">Pantau perkembangan pesananmu</div></div><a class="btn btn-light btn-sm" href="{{ route('customer.orders') }}">Lihat Pesanan</a></div>
+<div class="panel table-wrap">
+<table><thead><tr><th>No. Pesanan</th><th>Tanggal</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
+@forelse($latestOrders as $order)
+<tr><td>{{ $order->order_number }}</td><td>{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</td><td>Rp {{ number_format($order->total,0,',','.') }}</td><td><span class="badge">{{ ucfirst($order->status) }}</span></td><td><a class="btn btn-light btn-sm" href="{{ route('customer.order.show',$order->id) }}">Detail</a></td></tr>
+@empty
+<tr><td colspan="5" class="empty">Kamu belum memiliki pesanan. Yuk, temukan aroma favoritmu!</td></tr>
+@endforelse
+</tbody></table>
+</div>
+@endsection
