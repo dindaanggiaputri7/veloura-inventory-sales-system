@@ -1,66 +1,204 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Veloura Inventory & Sales Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
+![Database](https://img.shields.io/badge/Database-MySQL-4479A1?logo=mysql&logoColor=white)
+![Status](https://img.shields.io/badge/Status-In%20Development-9B6A76)
 
-## About Laravel
+**Veloura Inventory & Sales Management System** adalah aplikasi web untuk membantu pengelolaan persediaan produk dan pencatatan transaksi dalam satu sistem. Aplikasi ini dikembangkan menggunakan Laravel dan MySQL, dengan akses yang dibedakan berdasarkan peran **Admin**, **Staff**, dan **Customer**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Status proyek: **Dalam pengembangan**. Dokumentasi visual, data demonstrasi, dan detail akun uji akan ditambahkan setelah konfigurasi serta pengujian fitur selesai.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Daftar Isi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Fitur Utama](#fitur-utama)
+- [Peran Pengguna](#peran-pengguna)
+- [Teknologi](#teknologi)
+- [Gambaran Alur Sistem](#gambaran-alur-sistem)
+- [Persyaratan](#persyaratan)
+- [Instalasi Lokal](#instalasi-lokal)
+- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [Struktur Data Utama](#struktur-data-utama)
+- [Catatan Pengembangan](#catatan-pengembangan)
 
-## Learning Laravel
+## Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Pengelolaan produk, kategori, supplier, dan persediaan.
+- Pencatatan penjualan langsung oleh Staff.
+- Pencatatan pembelian stok dari supplier.
+- Katalog produk yang tersedia untuk Customer.
+- Keranjang belanja dan pembuatan pesanan Customer.
+- Pembayaran pesanan online melalui transfer manual dengan status pembayaran yang dapat diperiksa Staff.
+- Pemantauan status pesanan, riwayat transaksi, dan ringkasan dashboard.
+- Pemisahan akses berdasarkan peran pengguna.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Peran Pengguna
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Admin
 
-## Laravel Sponsors
+- Memantau ringkasan inventaris dan transaksi pada dashboard.
+- Mengelola kategori, produk, supplier, dan akun Staff.
+- Melihat data penjualan, pembelian, serta laporan yang tersedia di aplikasi.
+- Memantau penjualan langsung dan pesanan Customer yang pembayarannya telah tercatat lunas.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Staff
 
-### Premium Partners
+- Memeriksa produk dan stok yang menipis.
+- Mencatat penjualan langsung, termasuk produk, jumlah, diskon, dan metode pembayaran.
+- Mencatat pembelian stok dari supplier; jumlah stok produk bertambah sesuai pembelian yang disimpan.
+- Memeriksa pesanan Customer dan memperbarui status pesanan serta pembayaran sesuai alur yang diizinkan sistem.
+- Melihat riwayat penjualan langsung dan pesanan Customer.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Customer
 
-## Contributing
+- Melihat katalog dan detail produk yang tersedia.
+- Menambahkan produk ke keranjang dan memperbarui jumlah barang.
+- Membuat pesanan dengan mengisi alamat pengiriman.
+- Melihat detail serta riwayat pesanan.
+- Mengelola informasi profil.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Teknologi
 
-## Code of Conduct
+| Bagian | Teknologi |
+|---|---|
+| Backend | PHP 8.2+ dan Laravel 12 |
+| Database | MySQL / MariaDB |
+| Template tampilan | Laravel Blade |
+| Asset frontend | Vite, JavaScript, CSS, dan dependensi frontend project |
+| Pengembangan lokal | PHP, Composer, Node.js, dan npm |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Gambaran Alur Sistem
 
-## Security Vulnerabilities
+1. Admin menyiapkan data kategori, produk, supplier, dan akun Staff.
+2. Staff mencatat pembelian stok dari supplier atau mencatat penjualan langsung.
+3. Customer memilih produk dari katalog, memasukkannya ke keranjang, lalu membuat pesanan.
+4. Pesanan online tercatat dengan status pembayaran awal **belum dibayar** karena menggunakan alur transfer manual.
+5. Staff memeriksa pesanan dan memperbarui status pembayaran maupun status pesanan sesuai aturan aplikasi.
+6. Dashboard dan riwayat transaksi menampilkan data yang tersimpan di database.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Persyaratan
 
-## License
+Pastikan perangkat sudah memiliki:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- PHP 8.2 atau versi yang kompatibel dengan project.
+- Composer.
+- MySQL atau MariaDB (XAMPP dapat digunakan di Windows).
+- Node.js dan npm.
+- Git.
+
+## Instalasi Lokal
+
+### 1. Clone repository
+
+```bash
+git clone https://github.com/dindaanggiaputri7/veloura-inventory-sales-system.git
+cd veloura-inventory-sales-system
+```
+
+### 2. Pasang dependensi PHP
+
+```bash
+composer install
+```
+
+### 3. Siapkan file environment
+
+Di Windows Command Prompt:
+
+```bat
+copy .env.example .env
+```
+
+Jika file `.env` sudah ada, **jangan menimpanya**. Buka file tersebut dan sesuaikan konfigurasi database.
+
+Contoh konfigurasi MySQL lokal:
+
+```dotenv
+APP_NAME="Veloura Inventory & Sales Management System"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=inventory_sales
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Sesuaikan nama database, username, password, dan port dengan konfigurasi MySQL di perangkat masing-masing. Buat database `inventory_sales` terlebih dahulu melalui phpMyAdmin atau MySQL jika memang memakai nama tersebut.
+
+### 4. Buat application key
+
+```bash
+php artisan key:generate
+```
+
+### 5. Siapkan database
+
+Pastikan database yang dipilih pada `.env` sudah ada dan MySQL sedang berjalan, kemudian jalankan:
+
+```bash
+php artisan migrate
+```
+
+Perintah ini menjalankan migration yang tersedia di project. Sebelum menjalankan migration pada database yang sudah berisi data penting, buat backup terlebih dahulu. Jangan menggunakan `migrate:fresh` pada database yang berisi data karena perintah itu menghapus seluruh tabel.
+
+### 6. Pasang dependensi frontend
+
+```bash
+npm install
+npm run build
+```
+
+## Menjalankan Aplikasi
+
+Jalankan server Laravel dari direktori project:
+
+```bash
+php artisan serve
+```
+
+Buka alamat berikut di browser:
+
+```text
+http://127.0.0.1:8000
+```
+
+Jika sedang mengembangkan asset frontend, gunakan terminal terpisah untuk:
+
+```bash
+npm run dev
+```
+
+### Akun pengguna
+
+README ini tidak menetapkan username atau password demo karena akun awal harus disesuaikan dengan data pada database lokal. Gunakan mekanisme registrasi atau pengelolaan akun yang tersedia pada versi project yang sedang dijalankan. Jangan memasukkan password, token, atau isi file `.env` ke repository publik.
+
+## Struktur Data Utama
+
+Berikut kelompok data yang digunakan oleh fitur inti aplikasi:
+
+- **Users**: akun dan peran pengguna.
+- **Categories & Products**: kategori, informasi produk, harga, dan stok.
+- **Suppliers & Purchases**: data supplier dan transaksi pembelian stok.
+- **Purchase Items**: rincian item dalam pembelian.
+- **Sales & Sale Items**: transaksi penjualan langsung beserta rincian produknya.
+- **Customer Orders & Customer Order Items**: pesanan online dan rincian produk yang dipesan.
+
+Nama tabel dan kolom definitif mengikuti migration yang ada di repository.
+
+## Catatan Pengembangan
+
+Project ini masih dikembangkan. Penyempurnaan dokumentasi dapat dilakukan bertahap, misalnya dengan menambahkan:
+
+- Screenshot halaman Dashboard Admin, Staff, dan Customer.
+- Diagram ERD dan penjelasan relasi tabel.
+- Akun uji khusus demonstrasi (tanpa memakai password pribadi).
+- Daftar skenario pengujian dan hasil pengujiannya.
+- Panduan penggunaan untuk tiap peran.
+
+## Repository
+
+Source code: [dindaanggiaputri7/veloura-inventory-sales-system](https://github.com/dindaanggiaputri7/veloura-inventory-sales-system)
