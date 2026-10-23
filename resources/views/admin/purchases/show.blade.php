@@ -116,10 +116,12 @@
 
     <form action="{{ route('admin.purchases.destroy', $purchase) }}"
           method="POST"
-          onsubmit="return confirm('Yakin ingin menghapus transaksi ini dan mengurangi stok sesuai jumlah pembelian?')">
+          onsubmit="return confirm('Batalkan pembelian ini dan sesuaikan stok?')"
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-danger">Hapus Pembelian</button>
+        <button type="submit" class="purchase-btn purchase-btn-danger">
+            Batalkan
+        </button>
     </form>
 </div>
 @endsection

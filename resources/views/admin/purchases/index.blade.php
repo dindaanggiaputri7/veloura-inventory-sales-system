@@ -330,11 +330,7 @@
             <p>Kelola pembelian barang dan penambahan stok produk.</p>
         </div>
 
-        <a href="{{ route('admin.purchases.create') }}"
-           class="purchase-btn purchase-btn-primary">
-            <span aria-hidden="true">+</span>
-            Tambah Pembelian
-        </a>
+        
     </div>
 
     @if(session('success'))
@@ -445,15 +441,16 @@
                                     <form
                                         action="{{ route('admin.purchases.destroy', $purchase) }}"
                                         method="POST"
-                                        onsubmit="return confirm('Hapus transaksi pembelian ini? Pastikan stok produk disesuaikan dengan benar.')">
+                                        onsubmit="return confirm('Batalkan pembelian ini dan sesuaikan stok?')"
                                         @csrf
                                         @method('DELETE')
 
-                                        <button
-                                            type="submit"
+                                        <button 
+                                            type="submit" 
                                             class="purchase-btn purchase-btn-danger">
-                                            Hapus
+                                            Batalkan
                                         </button>
+                        
                                     </form>
                                 </div>
                             </td>

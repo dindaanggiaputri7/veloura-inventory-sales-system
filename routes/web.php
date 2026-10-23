@@ -75,7 +75,9 @@ Route::middleware(['auth', 'active.account'])
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
         Route::resource('suppliers', SupplierController::class);
-        Route::resource('purchases', PurchaseController::class);
+        Route::resource('purchases', PurchaseController::class)
+            ->only(['index', 'show', 'destroy']);
+
 Route::get('/sales', [SaleController::class, 'index'])
     ->name('sales.index');
 
@@ -84,7 +86,7 @@ Route::get('/sales/{sale}', [SaleController::class, 'show'])
 
 Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])
     ->name('sales.destroy');
-    
+
 Route::get('/reports', [ReportController::class, 'index'])
     ->name('reports.index');        
     });

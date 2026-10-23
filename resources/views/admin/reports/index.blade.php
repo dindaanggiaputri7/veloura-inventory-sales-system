@@ -60,17 +60,41 @@
     </form>
 </section>
 
+
 <div class="report-stats">
-    <div class="report-stat"><span>Penjualan Langsung</span><strong>{{ number_format($salesAmount, 0, ',', '.') }}</strong><small>{{ $totalSales }} transaksi · Rp</small></div>
-    <div class="report-stat"><span>Pembelian / Stock-in</span><strong>{{ number_format($purchasesAmount, 0, ',', '.') }}</strong><small>{{ $totalPurchases }} transaksi · Rp</small></div>
-    <div class="report-stat"><span>Pesanan Customer</span><strong>{{ number_format($customerOrdersAmount, 0, ',', '.') }}</strong><small>{{ $customerOrdersCount }} pesanan · Rp</small></div>
-    <div class="report-stat"><span>Selisih Penjualan Langsung - Pembelian</span><strong>{{ number_format($salesAmount - $purchasesAmount, 0, ',', '.') }}</strong><small>Belum termasuk pesanan online dan biaya lain · Rp</small></div>
+    <div class="report-stat">
+        <span>Total Penjualan (Langsung + Online)</span>
+        <strong>Rp {{ number_format($salesAmount, 0, ',', '.') }}</strong>
+        <small>{{ $totalSales }} transaksi yang memenuhi syarat</small>
+    </div>
+
+    <div class="report-stat">
+        <span>Penjualan Langsung</span>
+        <strong>Rp {{ number_format($directSalesAmount, 0, ',', '.') }}</strong>
+        <small>{{ $totalDirectSales }} transaksi selesai</small>
+    </div>
+
+    <div class="report-stat">
+        <span>Pembelian / Stock-in</span>
+        <strong>Rp {{ number_format($purchasesAmount, 0, ',', '.') }}</strong>
+        <small>{{ $totalPurchases }} transaksi tidak dibatalkan</small>
+    </div>
+
+    <div class="report-stat">
+        <span>Pesanan Customer yang Dibayar</span>
+        <strong>Rp {{ number_format($customerOrdersAmount, 0, ',', '.') }}</strong>
+        <small>{{ $paidCustomerOrdersCount }} pesanan telah dibayar</small>
+    </div>
 </div>
+
 
 <section class="panel">
     <h2 class="panel-title">Grafik Penjualan Langsung</h2>
     @if($days > 31)
-        <p class="report-note">Grafik dibatasi maksimal 31 hari agar tetap terbaca. Ringkasan dan tabel mengikuti rentang tanggal yang dipilih.</p>
+        <p class="report-note">
+            Grafik menggabungkan penjualan langsung yang selesai dan pesanan
+            Customer yang sudah dibayar. Pesanan dibatalkan tidak dihitung.
+        </p>
     @endif
     <div class="report-chart">
         @foreach($dailySales as $day)

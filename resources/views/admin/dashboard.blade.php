@@ -674,6 +674,12 @@
                                 <span class="product-name">
                                     {{ $sale->sale_number }}
                                 </span>
+
+                                <div class="small-muted">
+                                    {{ $sale->source_type === 'online'
+                                        ? 'Pesanan Customer'
+                                        : 'Penjualan langsung' }}
+                                </div>
                             </td>
 
                             <td>
@@ -682,7 +688,7 @@
 
                             <td>{{ $sale->customer_name ?: 'Pelanggan umum' }}</td>
 
-                            <td>{{ $itemCounts[$sale->id] ?? 0 }}</td>
+                            <td>{{ $sale->items_count }}</td>
 
                             <td style="font-weight:700;white-space:nowrap">
                                 Rp {{ number_format((float) $sale->total_amount, 0, ',', '.') }}
@@ -716,10 +722,6 @@
 
     <a href="{{ route('admin.suppliers.index') }}" class="quick-link">
         + Kelola Supplier
-    </a>
-
-    <a href="{{ route('admin.purchases.create') }}" class="quick-link">
-        + Catat Pembelian
     </a>
 
 </div>

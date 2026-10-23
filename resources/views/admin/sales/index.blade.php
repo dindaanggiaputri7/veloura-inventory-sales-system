@@ -1,386 +1,101 @@
 
 @extends('admin.layout')
 
+@section('title', 'Penjualan')
+@section('page-heading', 'Data Penjualan')
+@section('page-description', 'Pantau penjualan langsung dan pesanan Customer dalam satu daftar.')
+
 @section('content')
 <style>
-    .sales-page {
-        color: #39242a;
+    .sales-wrap { color:#39242a; }
+    .sales-panel {
+        padding:22px;
+        margin-bottom:20px;
+        background:#fff;
+        border:1px solid #eee1dc;
+        border-radius:14px;
+        box-shadow:0 5px 18px rgba(65,35,43,.035);
     }
-
-    .sales-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-        margin-bottom: 26px;
-    }
-
-    .sales-heading h1 {
-        margin: 0 0 7px;
-        font-size: 30px;
-        line-height: 1.3;
-        font-weight: 750;
-        letter-spacing: -.5px;
-        color: #39242a;
-    }
-
-    .sales-heading p {
-        margin: 0;
-        color: #88777d;
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .sales-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        min-height: 43px;
-        padding: 0 17px;
-        border: 1px solid transparent;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 650;
-        text-decoration: none;
-        white-space: nowrap;
-        cursor: pointer;
-        transition: background .2s, border-color .2s, transform .2s;
-    }
-
-    .sales-btn:hover {
-        transform: translateY(-1px);
-    }
-
-    .sales-btn-primary {
-        color: #fff;
-        background: #5b2632;
-        border-color: #5b2632;
-    }
-
-    .sales-btn-primary:hover {
-        background: #763746;
-    }
-
-    .sales-btn-secondary {
-        color: #5b2632;
-        background: #fff;
-        border-color: #e8d8d3;
-    }
-
-    .sales-btn-secondary:hover {
-        background: #faf1ed;
-    }
-
-    .sales-btn-danger {
-        color: #a72c3b;
-        background: #fff4f3;
-        border-color: #f1d5d5;
-    }
-
-    .sales-btn-danger:hover {
-        background: #ffe8e7;
-    }
-
-    .sales-alert {
-        margin-bottom: 20px;
-        padding: 14px 17px;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .sales-alert-success {
-        color: #246b49;
-        background: #edf8f1;
-        border-color: #d2ead9;
-    }
-
-    .sales-alert-info {
-        color: #73551c;
-        background: #fff8e7;
-        border-color: #f1e2b9;
-    }
-
-    .sales-alert-danger {
-        color: #a52d3c;
-        background: #fff1f0;
-        border-color: #f0d0ce;
-    }
-
-    .sales-alert ul {
-        margin: 8px 0 0;
-        padding-left: 21px;
-    }
-
-    .sales-card {
-        padding: 24px;
-        background: #fff;
-        border: 1px solid #eee1dc;
-        border-radius: 16px;
-        box-shadow: 0 5px 18px rgba(65, 35, 43, .035);
-    }
-
-    .sales-card-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .sales-card-heading h2 {
-        margin: 0;
-        font-size: 17px;
-        font-weight: 700;
-        color: #4f2530;
-    }
-
-    .sales-card-heading p {
-        margin: 5px 0 0;
-        color: #88777d;
-        font-size: 13px;
-    }
-
     .sales-filter {
-        display: grid;
-        grid-template-columns: minmax(220px, 1fr) 190px auto auto;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 24px;
+        display:grid;
+        grid-template-columns:minmax(220px,1fr) 180px auto auto;
+        gap:10px;
+        margin-bottom:18px;
     }
-
     .sales-filter input {
-        box-sizing: border-box;
-        width: 100%;
-        min-width: 0;
-        height: 44px;
-        padding: 0 13px;
-        color: #39242a;
-        background: #fffdfb;
-        border: 1px solid #e6d8d3;
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 13px;
-        transition: border-color .2s, box-shadow .2s;
+        width:100%;
+        padding:11px;
+        border:1px solid #e6d8d3;
+        border-radius:8px;
+        background:#fffdfb;
     }
-
-    .sales-filter input:focus {
-        outline: none;
-        border-color: #7a3443;
-        box-shadow: 0 0 0 3px rgba(122, 52, 67, .10);
+    .sales-btn {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:6px;
+        padding:10px 13px;
+        border:1px solid #e8d8d3;
+        border-radius:8px;
+        color:#5b2632;
+        background:#fff;
+        font-size:12px;
+        font-weight:700;
+        text-decoration:none;
+        cursor:pointer;
+        white-space:nowrap;
     }
-
-    .sales-filter .sales-btn {
-        width: auto;
-        min-width: 76px;
-    }
-
-    .sales-table-wrap {
-        width: 100%;
-        overflow-x: auto;
-        border: 1px solid #eee3de;
-        border-radius: 12px;
-    }
-
-    .sales-table {
-        width: 100%;
-        min-width: 850px;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
-    .sales-table thead {
-        background: #faf4f0;
-    }
-
+    .sales-btn-primary { background:#5b2632;color:#fff;border-color:#5b2632; }
+    .sales-btn-danger { background:#fff1f0;color:#a52d3c;border-color:#f0d0ce; }
+    .sales-table-wrap { overflow-x:auto; }
+    .sales-table { width:100%;min-width:950px;border-collapse:collapse;font-size:12px; }
     .sales-table th {
-        padding: 15px 14px;
-        color: #74525b;
-        font-size: 12px;
-        font-weight: 700;
-        white-space: nowrap;
-        border-bottom: 1px solid #eee3de;
+        padding:13px 10px;
+        color:#74525b;
+        background:#faf4f0;
+        text-align:left;
+        white-space:nowrap;
     }
-
-    .sales-table td {
-        padding: 15px 14px;
-        color: #59474d;
-        font-size: 13px;
-        vertical-align: middle;
-        border-bottom: 1px solid #f1e8e4;
+    .sales-table td { padding:13px 10px;border-bottom:1px solid #f1e8e4;vertical-align:middle; }
+    .sales-number { color:#5b2632;font-weight:750; }
+    .sales-muted { margin-top:4px;color:#95848a;font-size:11px; }
+    .sales-pill {
+        display:inline-block;
+        padding:5px 8px;
+        border-radius:20px;
+        color:#652a39;
+        background:#f5e9e6;
+        font-size:10px;
+        white-space:nowrap;
     }
-
-    .sales-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .sales-table tbody tr:hover {
-        background: #fffbf9;
-    }
-
-    .sales-number {
-        color: #5b2632;
-        font-weight: 700;
-    }
-
-    .sales-date {
-        color: #88777d;
-        white-space: nowrap;
-    }
-
-    .sales-amount {
-        color: #39242a;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .sales-method {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 9px;
-        color: #69404b;
-        background: #f8efec;
-        border: 1px solid #efe0da;
-        border-radius: 7px;
-        font-size: 11px;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .sales-actions {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-    }
-
-    .sales-actions .sales-btn {
-        min-height: 34px;
-        padding: 0 10px;
-        font-size: 12px;
-    }
-
-    .sales-empty {
-        padding: 48px 20px !important;
-        text-align: center;
-    }
-
-    .sales-empty-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 54px;
-        height: 54px;
-        margin: 0 auto 14px;
-        color: #7a3443;
-        background: #f8efec;
-        border-radius: 16px;
-        font-size: 25px;
-    }
-
-    .sales-empty strong {
-        display: block;
-        margin-bottom: 7px;
-        color: #4f2530;
-        font-size: 14px;
-    }
-
-    .sales-empty span {
-        color: #88777d;
-        font-size: 12px;
-    }
-
-    .sales-pagination {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-        margin-top: 20px;
-    }
-
-    .sales-pagination-info {
-        color: #88777d;
-        font-size: 12px;
-    }
-
-    .sales-pagination nav {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .sales-pagination nav a,
-    .sales-pagination nav span {
-        border-radius: 7px;
-    }
-
-    @media (max-width: 1000px) {
-        .sales-filter {
-            grid-template-columns: minmax(200px, 1fr) 180px;
-        }
-
-        .sales-filter .sales-btn {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 600px) {
-        .sales-heading h1 {
-            font-size: 25px;
-        }
-
-        .sales-heading > a {
-            width: 100%;
-        }
-
-        .sales-card {
-            padding: 16px;
-            border-radius: 13px;
-        }
-
-        .sales-filter {
-            grid-template-columns: 1fr;
-        }
-
-        .sales-filter .sales-btn {
-            width: 100%;
-        }
-
-        .sales-pagination {
-            align-items: flex-start;
-            flex-direction: column;
-        }
+    .sales-pill-success { color:#286638;background:#e8f3e8; }
+    .sales-pill-danger { color:#922f35;background:#fbe9e7; }
+    .sales-actions { display:flex;flex-wrap:wrap;gap:6px; }
+    .sales-alert { padding:12px 15px;margin-bottom:16px;border-radius:9px; }
+    .sales-success { color:#286638;background:#e8f3e8; }
+    .sales-error { color:#922f35;background:#fbe9e7; }
+    .sales-empty { padding:28px;text-align:center;color:#95848a; }
+    @media(max-width:760px) {
+        .sales-filter { grid-template-columns:1fr; }
+        .sales-panel { padding:15px; }
     }
 </style>
 
-<div class="sales-page">
-
-    <div class="sales-heading">
-        <div>
-            <h1>Data Penjualan</h1>
-            <p>Kelola transaksi penjualan dan pantau stok produk.</p>
-        </div>
-
-    </div>
-
+<div class="sales-wrap">
     @if(session('success'))
-        <div class="sales-alert sales-alert-success">
+        <div class="sales-alert sales-success">
             {{ session('success') }}
         </div>
     @endif
 
-    @if(session('info'))
-        <div class="sales-alert sales-alert-info">
-            {{ session('info') }}
+    @if(session('error'))
+        <div class="sales-alert sales-error">
+            {{ session('error') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="sales-alert sales-alert-danger">
+        <div class="sales-alert sales-error">
             <strong>Terjadi kesalahan:</strong>
             <ul>
                 @foreach($errors->all() as $error)
@@ -390,41 +105,36 @@
         </div>
     @endif
 
-    <div class="sales-card">
-
-        <div class="sales-card-heading">
-            <div>
-                <h2>Riwayat Transaksi</h2>
-                <p>Cari transaksi berdasarkan nomor, pelanggan, atau tanggal.</p>
-            </div>
-        </div>
+    <section class="sales-panel">
+        <p class="sales-muted" style="margin:0 0 17px">
+            Penjualan langsung dan pesanan online ditampilkan bersama.
+            Pesanan yang belum dibayar tetap terlihat, tetapi tidak masuk
+            perhitungan penjualan yang sudah dibayar.
+        </p>
 
         <form method="GET"
               action="{{ route('admin.sales.index') }}"
               class="sales-filter">
-
             <input
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
                 placeholder="Cari nomor transaksi atau pelanggan..."
-                aria-label="Cari nomor transaksi atau pelanggan"
+                aria-label="Cari transaksi"
             >
 
             <input
                 type="date"
                 name="date"
                 value="{{ request('date') }}"
-                aria-label="Filter tanggal penjualan"
+                aria-label="Filter tanggal"
             >
 
-            <button type="submit"
-                    class="sales-btn sales-btn-primary">
+            <button class="sales-btn sales-btn-primary" type="submit">
                 Cari
             </button>
 
-            <a href="{{ route('admin.sales.index') }}"
-               class="sales-btn sales-btn-secondary">
+            <a href="{{ route('admin.sales.index') }}" class="sales-btn">
                 Reset
             </a>
         </form>
@@ -434,83 +144,129 @@
                 <thead>
                     <tr>
                         <th>No.</th>
+                        <th>Jenis</th>
                         <th>Nomor Transaksi</th>
                         <th>Tanggal</th>
                         <th>Pelanggan</th>
-                        <th>Jumlah Item</th>
+                        <th>Item</th>
                         <th>Total</th>
-                        <th>Metode Pembayaran</th>
+                        <th>Pembayaran</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                    @forelse($sales as $sale)
+                    @forelse($transactions as $transaction)
+                        @php
+                            $isOnline = $transaction->source_type === 'online';
+
+                            $statusLabels = [
+                                'pending' => 'Menunggu',
+                                'processing' => 'Diproses',
+                                'completed' => 'Selesai',
+                                'delivered' => 'Dikirim/Diterima',
+                                'cancelled' => 'Dibatalkan',
+                            ];
+
+                            $paymentLabels = [
+                                'paid' => 'Sudah dibayar',
+                                'unpaid' => 'Belum dibayar',
+                                'cash' => 'Tunai',
+                                'transfer' => 'Transfer',
+                                'qris' => 'QRIS',
+                                'debit' => 'Debit',
+                                'transfer_manual' => 'Transfer manual',
+                            ];
+
+                            $statusLabel = $statusLabels[$transaction->status]
+                                ?? ucfirst($transaction->status);
+
+                            $paymentValue = $isOnline
+                                ? $transaction->payment_status
+                                : $transaction->payment_method;
+
+                            $paymentLabel = $paymentLabels[$paymentValue]
+                                ?? strtoupper((string) $paymentValue);
+
+                            $statusClass = $transaction->status === 'cancelled'
+                                ? 'sales-pill-danger'
+                                : (
+                                    ($isOnline && $transaction->payment_status === 'paid')
+                                    || (!$isOnline && $transaction->status === 'completed')
+                                        ? 'sales-pill-success'
+                                        : ''
+                                );
+                        @endphp
+
                         <tr>
-                            <td>{{ $sales->firstItem() + $loop->index }}</td>
+                            <td>{{ $transactions->firstItem() + $loop->index }}</td>
 
                             <td>
-                                <span class="sales-number">
-                                    {{ $sale->sale_number }}
+                                <span class="sales-pill">
+                                    {{ $isOnline ? 'Online' : 'Langsung' }}
                                 </span>
                             </td>
 
                             <td>
-                                <span class="sales-date">
-                                    {{ $sale->sale_date->format('d/m/Y') }}
-                                </span>
-                            </td>
-
-                            <td>{{ $sale->customer_name ?: 'Pelanggan umum' }}</td>
-
-                            <td>{{ $sale->items_count }} item</td>
-
-                            <td>
-                                <span class="sales-amount">
-                                    Rp {{ number_format((float) $sale->total_amount, 0, ',', '.') }}
-                                </span>
+                                <div class="sales-number">
+                                    {{ $transaction->transaction_number }}
+                                </div>
                             </td>
 
                             <td>
-                                <span class="sales-method">
-                                    {{ strtoupper($sale->payment_method) }}
+                                {{ \Illuminate\Support\Carbon::parse($transaction->transaction_date)->format('d/m/Y') }}
+                            </td>
+
+                            <td>{{ $transaction->customer_name ?: 'Pelanggan umum' }}</td>
+
+                            <td>{{ $transaction->items_count }} item</td>
+
+                            <td style="font-weight:750;white-space:nowrap">
+                                Rp {{ number_format((float)$transaction->amount, 0, ',', '.') }}
+                            </td>
+
+                            <td>{{ $paymentLabel }}</td>
+
+                            <td>
+                                <span class="sales-pill {{ $statusClass }}">
+                                    {{ $statusLabel }}
                                 </span>
                             </td>
 
                             <td>
                                 <div class="sales-actions">
-                                    <a
-                                        href="{{ route('admin.sales.show', $sale) }}"
-                                        class="sales-btn sales-btn-secondary">
-                                        Detail
-                                    </a>
+                                    @if(!$isOnline)
+                                        <a
+                                            href="{{ route('admin.sales.show', $transaction->source_id) }}"
+                                            class="sales-btn">
+                                            Detail
+                                        </a>
 
-                                    <form
-                                        action="{{ route('admin.sales.destroy', $sale) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Hapus transaksi ini dan kembalikan stok produknya?')">
-                                        @csrf
-                                        @method('DELETE')
+                                        @if($transaction->status === 'completed')
+                                            <form
+                                                action="{{ route('admin.sales.destroy', $transaction->source_id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Batalkan penjualan ini dan kembalikan stok?')">
+                                                @csrf
+                                                @method('DELETE')
 
-                                        <button
-                                            type="submit"
-                                            class="sales-btn sales-btn-danger">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                                <button type="submit" class="sales-btn sales-btn-danger">
+                                                    Batalkan
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <span class="sales-muted">
+                                            Diproses melalui Pesanan Customer
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="sales-empty">
-                                <div class="sales-empty-icon" aria-hidden="true">
-                                    ↗
-                                </div>
-                                <strong>Belum ada transaksi penjualan</strong>
-                                <span>
-                                    Transaksi yang berhasil disimpan akan muncul di sini.
-                                </span>
+                            <td colspan="10" class="sales-empty">
+                                Belum ada transaksi penjualan atau pesanan Customer.
                             </td>
                         </tr>
                     @endforelse
@@ -518,18 +274,9 @@
             </table>
         </div>
 
-        @if($sales->hasPages())
-            <div class="sales-pagination">
-                <div class="sales-pagination-info">
-                    Menampilkan {{ $sales->firstItem() ?? 0 }}
-                   –{{ $sales->lastItem() ?? 0 }}
-                    dari {{ $sales->total() }} transaksi
-                </div>
-
-                {{ $sales->links() }}
-            </div>
-        @endif
-
-    </div>
+        <div style="margin-top:18px">
+            {{ $transactions->links() }}
+        </div>
+    </section>
 </div>
 @endsection

@@ -7,7 +7,6 @@ use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
@@ -21,147 +20,118 @@ class SaleController extends Controller
     {
         $this->ensureAdmin();
 
-        $sales = Sale::withCount('items')
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = $request->search;
+        // Penjualan langsung.
+        $directSales = DB::table('sales')
+            ->selectRaw("
+                'langsung' AS source_type,
+                id AS source_id,
+                sale_number AS transaction_number,
+                sale_date AS transaction_date,
+                COALESCE(customer_name, 'Pelanggan umum') AS customer_name,
+                total_amount AS amount,
+                payment_method,
+                status,
+                NULL AS payment_status
+            ");
 
-                $query->where(function ($q) use ($search) {
-                    $q->where('sale_number', 'like', "%{$search}%")
-                        ->orWhere('customer_name', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->filled('date'), function ($query) use ($request) {
-                $query->whereDate('sale_date', $request->date);
-            })
-            ->orderByDesc('sale_date')
-            ->orderByDesc('id')
+        // Pesanan Customer.
+        $onlineOrders = DB::table('customer_orders')
+            ->selectRaw("
+                'online' AS source_type,
+                id AS source_id,
+                order_number AS transaction_number,
+                DATE(created_at) AS transaction_date,
+                customer_name,
+                total AS amount,
+                payment_method,
+                status,
+                payment_status
+            ");
+
+        // Gabungkan untuk dibaca sebagai satu daftar.
+        // Data asli tetap berada di tabel masing-masing.
+        $union = $directSales->unionAll($onlineOrders);
+
+        $transactionsQuery = DB::query()
+            ->fromSub($union, 'transactions');
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->input('search'));
+
+            $transactionsQuery->where(function ($query) use ($search) {
+                $query->where(
+                    'transaction_number',
+                    'like',
+                    "%{$search}%"
+                )->orWhere(
+                    'customer_name',
+                    'like',
+                    "%{$search}%"
+                );
+            });
+        }
+
+        if ($request->filled('date')) {
+            $transactionsQuery->whereDate(
+                'transaction_date',
+                $request->input('date')
+            );
+        }
+
+        $transactions = $transactionsQuery
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('source_id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.sales.index', compact('sales'));
-    }
+        // Hitung jumlah item per transaksi pada halaman yang sedang dibuka.
+        $rows = collect($transactions->items());
 
-    public function create()
-    {
-        $this->ensureAdmin();
+        $directIds = $rows
+            ->where('source_type', 'langsung')
+            ->pluck('source_id')
+            ->values()
+            ->all();
 
-        $products = Product::orderBy('name')->get();
+        $onlineIds = $rows
+            ->where('source_type', 'online')
+            ->pluck('source_id')
+            ->values()
+            ->all();
 
-        return view('admin.sales.create', compact('products'));
-    }
+        $directCounts = collect();
 
-    public function store(Request $request)
-    {
-        $this->ensureAdmin();
+        if (!empty($directIds)) {
+            $directCounts = DB::table('sale_items')
+                ->select(
+                    'sale_id',
+                    DB::raw('SUM(quantity) AS total_items')
+                )
+                ->whereIn('sale_id', $directIds)
+                ->groupBy('sale_id')
+                ->pluck('total_items', 'sale_id');
+        }
 
-        $validated = $request->validate([
-            'sale_date' => ['required', 'date'],
-            'customer_name' => ['nullable', 'string', 'max:255'],
-            'discount' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
-            'payment_amount' => ['required', 'numeric', 'min:0', 'max:999999999999'],
-            'payment_method' => ['required', 'in:cash,transfer,qris,debit'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => [
-                'required',
-                'integer',
-                'distinct',
-                'exists:products,id',
-            ],
-            'items.*.quantity' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:4294967295',
-            ],
-        ]);
+        $onlineCounts = collect();
 
-        $sale = DB::transaction(function () use ($validated) {
-            $preparedItems = [];
-            $subtotalTotal = 0;
+        if (!empty($onlineIds)) {
+            $onlineCounts = DB::table('customer_order_items')
+                ->select(
+                    'customer_order_id',
+                    DB::raw('SUM(quantity) AS total_items')
+                )
+                ->whereIn('customer_order_id', $onlineIds)
+                ->groupBy('customer_order_id')
+                ->pluck('total_items', 'customer_order_id');
+        }
 
-            foreach ($validated['items'] as $item) {
-                $product = Product::whereKey($item['product_id'])
-                    ->lockForUpdate()
-                    ->firstOrFail();
+        foreach ($rows as $row) {
+            $row->items_count = $row->source_type === 'langsung'
+                ? (int) $directCounts->get($row->source_id, 0)
+                : (int) $onlineCounts->get($row->source_id, 0);
+        }
 
-                $quantity = (int) $item['quantity'];
-
-                if ($product->stock < $quantity) {
-                    throw ValidationException::withMessages([
-                        'items' => "Stok produk {$product->name} tidak mencukupi. Stok tersedia: {$product->stock}.",
-                    ]);
-                }
-
-                $unitPrice = (float) $product->selling_price;
-                $subtotal = round($quantity * $unitPrice, 2);
-
-                $preparedItems[] = [
-                    'product' => $product,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                    'subtotal' => $subtotal,
-                ];
-
-                $subtotalTotal += $subtotal;
-            }
-
-            $subtotalTotal = round($subtotalTotal, 2);
-            $discount = round((float) ($validated['discount'] ?? 0), 2);
-
-            if ($discount > $subtotalTotal) {
-                throw ValidationException::withMessages([
-                    'discount' => 'Diskon tidak boleh melebihi subtotal penjualan.',
-                ]);
-            }
-
-            $total = round($subtotalTotal - $discount, 2);
-            $paymentAmount = round((float) $validated['payment_amount'], 2);
-
-            if ($paymentAmount < $total) {
-                throw ValidationException::withMessages([
-                    'payment_amount' => 'Jumlah pembayaran tidak boleh kurang dari total penjualan.',
-                ]);
-            }
-
-            $sale = Sale::create([
-                'sale_number' => 'PJ-'
-                    . now()->format('YmdHis')
-                    . '-'
-                    . Str::upper(Str::random(4)),
-                'sale_date' => $validated['sale_date'],
-                'customer_name' => $validated['customer_name'] ?? null,
-                'total_amount' => $total,
-                'discount' => $discount,
-                'payment_amount' => $paymentAmount,
-                'payment_method' => $validated['payment_method'],
-                'status' => 'completed',
-                'notes' => $validated['notes'] ?? null,
-            ]);
-
-            foreach ($preparedItems as $item) {
-                $item['product']->decrement(
-                    'stock',
-                    $item['quantity']
-                );
-
-                $sale->items()->create([
-                    'product_id' => $item['product']->id,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'subtotal' => $item['subtotal'],
-                ]);
-            }
-
-            return $sale;
-        });
-
-        return redirect()
-            ->route('admin.sales.show', $sale)
-            ->with(
-                'success',
-                'Penjualan berhasil disimpan dan stok produk telah diperbarui.'
-            );
+        return view('admin.sales.index', compact('transactions'));
     }
 
     public function show(Sale $sale)
@@ -173,33 +143,8 @@ class SaleController extends Controller
         return view('admin.sales.show', compact('sale'));
     }
 
-    public function edit(Sale $sale)
-    {
-        $this->ensureAdmin();
-
-        return redirect()
-            ->route('admin.sales.show', $sale)
-            ->with(
-                'info',
-                'Transaksi yang sudah selesai tidak dapat diedit.'
-            );
-    }
-
-    public function update(Request $request, Sale $sale)
-    {
-        $this->ensureAdmin();
-
-        return redirect()
-            ->route('admin.sales.show', $sale)
-            ->with(
-                'info',
-                'Transaksi yang sudah selesai tidak dapat diedit.'
-            );
-    }
-
     /**
-     * Batalkan penjualan tanpa menghapus catatan transaksi.
-     * Stok dikembalikan hanya satu kali.
+     * Batalkan penjualan langsung tanpa menghapus riwayatnya.
      */
     public function destroy(Sale $sale)
     {
@@ -235,7 +180,6 @@ class SaleController extends Controller
                 );
             }
 
-            // Simpan transaksi sebagai riwayat, jangan hapus permanen.
             $lockedSale->update([
                 'status' => 'cancelled',
             ]);
@@ -245,7 +189,7 @@ class SaleController extends Controller
             ->route('admin.sales.index')
             ->with(
                 'success',
-                'Penjualan dibatalkan. Stok dikembalikan dan catatan transaksi tetap disimpan.'
+                'Penjualan dibatalkan. Stok dikembalikan dan riwayat transaksi tetap disimpan.'
             );
     }
 }
