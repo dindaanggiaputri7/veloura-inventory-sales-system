@@ -365,11 +365,6 @@
             <p>Kelola transaksi penjualan dan pantau stok produk.</p>
         </div>
 
-        <a href="{{ route('admin.sales.create') }}"
-           class="sales-btn sales-btn-primary">
-            <span aria-hidden="true">+</span>
-            Tambah Penjualan
-        </a>
     </div>
 
     @if(session('success'))

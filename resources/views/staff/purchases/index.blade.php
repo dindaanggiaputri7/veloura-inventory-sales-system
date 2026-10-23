@@ -1,0 +1,28 @@
+@extends('staff.layout')
+@section('title','Pembelian / Stock-in')
+@section('page-heading','Pembelian / Stock-in')
+@section('page-description','Catat pembelian supplier dan tambah stok setelah transaksi berhasil.')
+@section('content')
+@if(session('success'))<div style="padding:12px;background:#e7f6ec;color:#216e39;border-radius:8px;margin-bottom:16px">{{ session('success') }}</div>@endif
+@if($errors->any())<div style="padding:12px;background:#fff0f0;color:#9c2525;border-radius:8px;margin-bottom:16px"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+<div style="background:white;padding:22px;border:1px solid #eadbd6;border-radius:12px;margin-bottom:22px"><h3>Input Pembelian</h3><form method="POST" action="{{ route('staff.purchases.store') }}">@csrf
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+<label>Supplier<select name="supplier_id" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"><option value="">Pilih supplier</option>@foreach($suppliers as $supplier)<option value="{{ $supplier->id }}">{{ $supplier->name }}</option>@endforeach</select></label>
+<label>Tanggal<input type="date" name="purchase_date" value="{{ old('purchase_date',date('Y-m-d')) }}" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"></label></div>
+<h4>Produk</h4><div id="purchase-items"><div class="purchase-row" style="display:grid;grid-template-columns:minmax(160px,2fr) minmax(80px,1fr) minmax(120px,1fr) auto;gap:10px;margin-bottom:10px">
+<select name="items[0][product_id]" required style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><option value="">Pilih produk</option>@foreach($products as $product)<option value="{{ $product->id }}">{{ $product->name }} (stok {{ $product->stock }})</option>@endforeach</select>
+<input type="number" name="items[0][quantity]" min="1" value="1" required placeholder="Jumlah" style="padding:10px;border:1px solid #eadbd6;border-radius:7px">
+<input type="number" name="items[0][unit_price]" min="0" step="0.01" required placeholder="Harga beli" style="padding:10px;border:1px solid #eadbd6;border-radius:7px">
+<button type="button" class="remove-purchase" style="padding:8px;border:0;border-radius:7px;background:#f5e5e5;color:#57222f">Hapus</button></div></div>
+<button type="button" id="add-purchase-item" style="padding:9px 13px;border:1px solid #57222f;border-radius:7px;background:white;color:#57222f">+ Tambah Produk</button>
+<label style="display:block;margin-top:14px">Catatan<textarea name="notes" rows="2" style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px">{{ old('notes') }}</textarea></label>
+<button type="submit" style="margin-top:14px;padding:11px 18px;border:0;border-radius:7px;background:#57222f;color:white">Simpan Pembelian</button></form></div>
+<div style="background:white;padding:22px;border:1px solid #eadbd6;border-radius:12px"><h3>Riwayat Pembelian</h3><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#fcf8f5;text-align:left"><th style="padding:12px">No.</th><th style="padding:12px">Nomor</th><th style="padding:12px">Supplier</th><th style="padding:12px">Tanggal</th><th style="padding:12px">Total</th><th style="padding:12px">Status</th></tr></thead><tbody>
+@forelse($purchases as $purchase)<tr style="border-bottom:1px solid #f1e8e4"><td style="padding:12px">{{ $purchases->firstItem()+$loop->index }}</td><td style="padding:12px">{{ $purchase->purchase_number }}</td><td style="padding:12px">{{ $purchase->supplier->name ?? '-' }}</td><td style="padding:12px">{{ \Illuminate\Support\Carbon::parse($purchase->purchase_date)->format('d/m/Y') }}</td><td style="padding:12px">Rp {{ number_format((float)$purchase->total_amount,0,',','.') }}</td><td style="padding:12px">{{ ucfirst($purchase->status) }}</td></tr>@empty<tr><td colspan="6" style="padding:20px;text-align:center">Belum ada pembelian.</td></tr>@endforelse
+</tbody></table></div><div style="margin-top:18px">{{ $purchases->links() }}</div></div>
+<script>
+let purchaseItemIndex=1;
+document.getElementById('add-purchase-item').addEventListener('click',function(){const first=document.querySelector('#purchase-items select[name$="[product_id]"]');const row=document.createElement('div');row.className='purchase-row';row.style.cssText='display:grid;grid-template-columns:minmax(160px,2fr) minmax(80px,1fr) minmax(120px,1fr) auto;gap:10px;margin-bottom:10px';row.innerHTML=`<select name="items[${purchaseItemIndex}][product_id]" required style="padding:10px;border:1px solid #eadbd6;border-radius:7px">${first.innerHTML}</select><input type="number" name="items[${purchaseItemIndex}][quantity]" min="1" value="1" required placeholder="Jumlah" style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><input type="number" name="items[${purchaseItemIndex}][unit_price]" min="0" step="0.01" required placeholder="Harga beli" style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><button type="button" class="remove-purchase" style="padding:8px;border:0;border-radius:7px;background:#f5e5e5;color:#57222f">Hapus</button>`;document.getElementById('purchase-items').appendChild(row);purchaseItemIndex++;});
+document.getElementById('purchase-items').addEventListener('click',function(e){if(e.target.classList.contains('remove-purchase')&&document.querySelectorAll('.purchase-row').length>1)e.target.closest('.purchase-row').remove();});
+</script>
+@endsection

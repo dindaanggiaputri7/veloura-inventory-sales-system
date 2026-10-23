@@ -722,9 +722,6 @@
         + Catat Pembelian
     </a>
 
-    <a href="{{ route('admin.sales.create') }}" class="quick-link">
-        + Catat Penjualan
-    </a>
 </div>
 
 @endsection

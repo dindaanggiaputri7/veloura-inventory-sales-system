@@ -1,41 +1,24 @@
-
 @extends('staff.layout')
-
-@section('title', 'Penjualan')
-@section('page-heading', 'Penjualan')
-@section('page-description', 'Pilih produk yang tersedia untuk proses penjualan.')
-
+@section('title','Penjualan')
+@section('page-heading','Penjualan')
+@section('page-description','Catat penjualan langsung; harga dan total dihitung ulang oleh server.')
 @section('content')
-<div style="background:white;padding:22px;border:1px solid #eadbd6;border-radius:12px">
-    <h3 style="margin-top:0">Produk Tersedia</h3>
-
-    <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-            <thead>
-                <tr style="background:#fcf8f5;text-align:left">
-                    <th style="padding:12px">No.</th>
-                    <th style="padding:12px">SKU</th>
-                    <th style="padding:12px">Nama Produk</th>
-                    <th style="padding:12px">Stok Tersedia</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($products as $product)
-                    <tr style="border-bottom:1px solid #f1e8e4">
-                        <td style="padding:12px">{{ $loop->iteration }}</td>
-                        <td style="padding:12px">{{ $product->sku ?? '-' }}</td>
-                        <td style="padding:12px;font-weight:600">{{ $product->name }}</td>
-                        <td style="padding:12px">{{ $product->stock }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" style="padding:20px;text-align:center">
-                            Belum ada produk dengan stok tersedia.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+@if(session('success'))<div style="padding:12px;background:#e7f6ec;color:#216e39;border-radius:8px;margin-bottom:16px">{{ session('success') }}</div>@endif
+@if($errors->any())<div style="padding:12px;background:#fff0f0;color:#9c2525;border-radius:8px;margin-bottom:16px"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+<div style="background:white;padding:22px;border:1px solid #eadbd6;border-radius:12px;margin-bottom:22px"><h3>Input Penjualan Langsung</h3><form method="POST" action="{{ route('staff.sales.store') }}">@csrf
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+<label>Tanggal<input type="date" name="sale_date" value="{{ old('sale_date',date('Y-m-d')) }}" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"></label>
+<label>Nama pelanggan<input name="customer_name" value="{{ old('customer_name') }}" maxlength="255" style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"></label>
+<label>Metode pembayaran<select name="payment_method" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"><option value="cash">Tunai</option><option value="transfer">Transfer</option><option value="qris">QRIS</option><option value="debit">Debit</option></select></label></div>
+<h4>Produk</h4><div id="sale-items"><div class="sale-row" style="display:grid;grid-template-columns:minmax(180px,2fr) minmax(90px,1fr) auto;gap:10px;margin-bottom:10px">
+<select name="items[0][product_id]" required style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><option value="">Pilih produk</option>@foreach($products as $product)<option value="{{ $product->id }}">{{ $product->name }} — stok {{ $product->stock }} — Rp {{ number_format((float)$product->selling_price,0,',','.') }}</option>@endforeach</select>
+<input type="number" name="items[0][quantity]" min="1" value="1" required aria-label="Jumlah produk" style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><button type="button" class="remove-row" style="padding:8px 12px;border:0;border-radius:7px;background:#f5e5e5;color:#57222f">Hapus</button></div></div>
+<button type="button" id="add-item" style="padding:9px 13px;border:1px solid #57222f;border-radius:7px;background:white;color:#57222f">+ Tambah Produk</button>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px"><label>Diskon (Rp)<input type="number" name="discount" min="0" step="0.01" value="{{ old('discount',0) }}" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"></label><label>Jumlah dibayar (Rp)<input type="number" name="payment_amount" min="0" step="0.01" value="{{ old('payment_amount') }}" required style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px"></label></div>
+<label style="display:block;margin-top:14px">Catatan<textarea name="notes" rows="2" maxlength="2000" style="display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #eadbd6;border-radius:7px">{{ old('notes') }}</textarea></label>
+<p style="color:#99878b;font-size:12px">Total dihitung di server. Pembayaran minimal sama dengan total setelah diskon.</p><button type="submit" style="padding:11px 18px;border:0;border-radius:7px;background:#57222f;color:white">Simpan Penjualan</button></form></div>
+<div style="background:white;padding:22px;border:1px solid #eadbd6;border-radius:12px"><h3>Riwayat Penjualan Langsung</h3><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#fcf8f5;text-align:left"><th style="padding:12px">No.</th><th style="padding:12px">Nomor</th><th style="padding:12px">Tanggal</th><th style="padding:12px">Pelanggan</th><th style="padding:12px">Total</th><th style="padding:12px">Status</th><th style="padding:12px">Metode</th></tr></thead><tbody>@forelse($sales as $sale)<tr style="border-bottom:1px solid #f1e8e4"><td style="padding:12px">{{ $sales->firstItem()+$loop->index }}</td><td style="padding:12px">{{ $sale->sale_number }}</td><td style="padding:12px">{{ \Illuminate\Support\Carbon::parse($sale->sale_date)->format('d/m/Y') }}</td><td style="padding:12px">{{ $sale->customer_name ?: 'Pelanggan umum' }}</td><td style="padding:12px">Rp {{ number_format((float)$sale->total_amount,0,',','.') }}</td><td style="padding:12px">{{ ucfirst($sale->status) }}</td><td style="padding:12px">{{ strtoupper($sale->payment_method) }}</td></tr>@empty<tr><td colspan="7" style="padding:20px;text-align:center">Belum ada penjualan langsung.</td></tr>@endforelse</tbody></table></div><div style="margin-top:18px">{{ $sales->links() }}</div></div>
+<script>
+let itemIndex=1;document.getElementById('add-item').addEventListener('click',function(){const first=document.querySelector('#sale-items select[name$="[product_id]"]');const row=document.createElement('div');row.className='sale-row';row.style.cssText='display:grid;grid-template-columns:minmax(180px,2fr) minmax(90px,1fr) auto;gap:10px;margin-bottom:10px';row.innerHTML=`<select name="items[${itemIndex}][product_id]" required style="padding:10px;border:1px solid #eadbd6;border-radius:7px">${first.innerHTML}</select><input type="number" name="items[${itemIndex}][quantity]" min="1" value="1" required aria-label="Jumlah produk" style="padding:10px;border:1px solid #eadbd6;border-radius:7px"><button type="button" class="remove-row" style="padding:8px 12px;border:0;border-radius:7px;background:#f5e5e5;color:#57222f">Hapus</button>`;document.getElementById('sale-items').appendChild(row);itemIndex++;});document.getElementById('sale-items').addEventListener('click',function(e){if(e.target.classList.contains('remove-row')&&document.querySelectorAll('.sale-row').length>1)e.target.closest('.sale-row').remove();});
+</script>
 @endsection

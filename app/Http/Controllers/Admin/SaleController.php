@@ -68,7 +68,12 @@ class SaleController extends Controller
                 'distinct',
                 'exists:products,id',
             ],
-            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:4294967295'],
+            'items.*.quantity' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:4294967295',
+            ],
         ]);
 
         $sale = DB::transaction(function () use ($validated) {
@@ -120,7 +125,10 @@ class SaleController extends Controller
             }
 
             $sale = Sale::create([
-                'sale_number' => 'PJ-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4)),
+                'sale_number' => 'PJ-'
+                    . now()->format('YmdHis')
+                    . '-'
+                    . Str::upper(Str::random(4)),
                 'sale_date' => $validated['sale_date'],
                 'customer_name' => $validated['customer_name'] ?? null,
                 'total_amount' => $total,
@@ -132,7 +140,10 @@ class SaleController extends Controller
             ]);
 
             foreach ($preparedItems as $item) {
-                $item['product']->decrement('stock', $item['quantity']);
+                $item['product']->decrement(
+                    'stock',
+                    $item['quantity']
+                );
 
                 $sale->items()->create([
                     'product_id' => $item['product']->id,
@@ -147,7 +158,10 @@ class SaleController extends Controller
 
         return redirect()
             ->route('admin.sales.show', $sale)
-            ->with('success', 'Penjualan berhasil disimpan dan stok produk telah diperbarui.');
+            ->with(
+                'success',
+                'Penjualan berhasil disimpan dan stok produk telah diperbarui.'
+            );
     }
 
     public function show(Sale $sale)
@@ -165,7 +179,10 @@ class SaleController extends Controller
 
         return redirect()
             ->route('admin.sales.show', $sale)
-            ->with('info', 'Transaksi yang sudah selesai tidak dapat diedit.');
+            ->with(
+                'info',
+                'Transaksi yang sudah selesai tidak dapat diedit.'
+            );
     }
 
     public function update(Request $request, Sale $sale)
@@ -174,31 +191,61 @@ class SaleController extends Controller
 
         return redirect()
             ->route('admin.sales.show', $sale)
-            ->with('info', 'Transaksi yang sudah selesai tidak dapat diedit.');
+            ->with(
+                'info',
+                'Transaksi yang sudah selesai tidak dapat diedit.'
+            );
     }
 
+    /**
+     * Batalkan penjualan tanpa menghapus catatan transaksi.
+     * Stok dikembalikan hanya satu kali.
+     */
     public function destroy(Sale $sale)
     {
         $this->ensureAdmin();
 
         DB::transaction(function () use ($sale) {
-            $sale = Sale::whereKey($sale->id)
+            $lockedSale = Sale::whereKey($sale->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            foreach ($sale->items as $item) {
+            if ($lockedSale->status === 'cancelled') {
+                throw ValidationException::withMessages([
+                    'sale' => 'Transaksi ini sudah dibatalkan sebelumnya.',
+                ]);
+            }
+
+            if ($lockedSale->status !== 'completed') {
+                throw ValidationException::withMessages([
+                    'sale' => 'Hanya penjualan yang selesai yang dapat dibatalkan.',
+                ]);
+            }
+
+            $lockedSale->load('items');
+
+            foreach ($lockedSale->items as $item) {
                 $product = Product::whereKey($item->product_id)
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                $product->increment('stock', $item->quantity);
+                $product->increment(
+                    'stock',
+                    (int) $item->quantity
+                );
             }
 
-            $sale->delete();
+            // Simpan transaksi sebagai riwayat, jangan hapus permanen.
+            $lockedSale->update([
+                'status' => 'cancelled',
+            ]);
         });
 
         return redirect()
             ->route('admin.sales.index')
-            ->with('success', 'Penjualan dihapus dan stok telah dikembalikan.');
+            ->with(
+                'success',
+                'Penjualan dibatalkan. Stok dikembalikan dan catatan transaksi tetap disimpan.'
+            );
     }
 }

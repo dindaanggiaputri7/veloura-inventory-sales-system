@@ -1,9 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>@yield('title', 'Admin') | Veloura</title>
 
     <style>
@@ -41,16 +42,19 @@
             text-decoration: none;
         }
 
-        button, input, select, textarea {
+        button,
+        input,
+        select,
+        textarea {
             font: inherit;
         }
 
-        button, a {
+        button,
+        a {
             -webkit-tap-highlight-color: transparent;
         }
 
         /* SIDEBAR */
-
         .sidebar {
             position: fixed;
             inset: 0 auto 0 0;
@@ -79,9 +83,9 @@
             width: 42px;
             height: 42px;
             place-items: center;
-            border: 1px solid rgba(255,255,255,.25);
+            border: 1px solid rgba(255, 255, 255, .25);
             border-radius: 12px;
-            background: rgba(255,255,255,.09);
+            background: rgba(255, 255, 255, .09);
             font-family: Georgia, serif;
             font-size: 25px;
             font-weight: 700;
@@ -131,14 +135,14 @@
 
         .nav-link:hover {
             color: white;
-            background: rgba(255,255,255,.09);
+            background: rgba(255, 255, 255, .09);
             transform: translateX(2px);
         }
 
         .nav-link.active {
             color: white;
             background: #824653;
-            border-color: rgba(255,255,255,.08);
+            border-color: rgba(255, 255, 255, .08);
             box-shadow: inset 3px 0 #f0d0d3;
         }
 
@@ -176,9 +180,9 @@
             gap: 10px;
             padding: 12px 10px;
             margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,.15);
+            border: 1px solid rgba(255, 255, 255, .15);
             border-radius: 11px;
-            background: rgba(255,255,255,.055);
+            background: rgba(255, 255, 255, .055);
         }
 
         .avatar {
@@ -210,7 +214,7 @@
         .logout {
             width: 100%;
             padding: 11px;
-            border: 1px solid rgba(255,255,255,.25);
+            border: 1px solid rgba(255, 255, 255, .25);
             border-radius: 9px;
             color: #fff;
             background: transparent;
@@ -220,11 +224,10 @@
         }
 
         .logout:hover {
-            background: rgba(255,255,255,.1);
+            background: rgba(255, 255, 255, .1);
         }
 
         /* MAIN CONTENT */
-
         .main {
             min-height: 100vh;
             margin-left: 250px;
@@ -259,7 +262,7 @@
             padding: 8px 11px;
             border: 1px solid var(--border);
             border-radius: 12px;
-            background: rgba(255,255,255,.8);
+            background: rgba(255, 255, 255, .8);
         }
 
         .topbar-user .avatar {
@@ -295,7 +298,6 @@
         }
 
         /* GENERAL COMPONENTS */
-
         .panel {
             padding: 22px;
             margin-bottom: 21px;
@@ -372,7 +374,9 @@
             gap: 8px;
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 11px 12px;
             border: 1px solid #e7d9d3;
@@ -383,9 +387,11 @@
             transition: border-color .18s, box-shadow .18s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: #a86c7b;
-            box-shadow: 0 0 0 3px rgba(101,42,57,.08);
+            box-shadow: 0 0 0 3px rgba(101, 42, 57, .08);
         }
 
         .search input {
@@ -451,7 +457,8 @@
             font-size: 12px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 13px 12px;
             border-bottom: 1px solid #f0e7e3;
             text-align: left;
@@ -508,7 +515,8 @@
             gap: 5px;
         }
 
-        .pagination a, .pagination span {
+        .pagination a,
+        .pagination span {
             display: inline-block;
             padding: 8px 11px;
             border: 1px solid var(--border);
@@ -558,7 +566,7 @@
                 width: 250px;
                 transform: translateX(-100%);
                 transition: transform .25s ease;
-                box-shadow: 10px 0 30px rgba(0,0,0,.12);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, .12);
             }
 
             .sidebar.open {
@@ -570,7 +578,7 @@
                 inset: 0;
                 z-index: 90;
                 display: none;
-                background: rgba(31,17,21,.4);
+                background: rgba(31, 17, 21, .4);
             }
 
             .sidebar-overlay.show {
@@ -622,7 +630,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
+            *,
+            *::before,
+            *::after {
                 scroll-behavior: auto !important;
                 transition-duration: .01ms !important;
             }
@@ -638,7 +648,10 @@
             <div class="brand-symbol">V</div>
             <div>
                 <div class="brand-name">VELOURA</div>
-                <div class="brand-caption">INVENTORY &amp; SALES<br>MANAGEMENT SYSTEM</div>
+                <div class="brand-caption">
+                    INVENTORY &amp; SALES<br>
+                    MANAGEMENT SYSTEM
+                </div>
             </div>
         </a>
 
@@ -648,19 +661,37 @@
 
                 <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                    href="{{ route('admin.dashboard') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m3 10 9-7 9 7"></path>
+                            <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
+                        </svg>
+                    </span>
                     Dashboard
                 </a>
 
                 <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
                    href="{{ route('admin.users.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M20 8v6M23 11h-6"></path>
+                        </svg>
+                    </span>
                     Manajemen Staff
                 </a>
 
                 <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
                    href="{{ route('admin.categories.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        </svg>
+                    </span>
                     Kategori
                 </a>
             </div>
@@ -670,26 +701,61 @@
 
                 <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
                    href="{{ route('admin.products.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m12 3 9 5-9 5-9-5 9-5Z"></path>
+                            <path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9"></path>
+                        </svg>
+                    </span>
                     Produk
                 </a>
 
                 <a class="nav-link {{ request()->routeIs('admin.suppliers.*') ? 'active' : '' }}"
                    href="{{ route('admin.suppliers.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M1 21h22M8 7h4M8 11h4M8 15h4M17 9h3l2 3v9"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M1 21h22"></path>
+                            <path d="M8 7h4M8 11h4M8 15h4M17 9h3l2 3v9"></path>
+                        </svg>
+                    </span>
                     Supplier
                 </a>
 
                 <a class="nav-link {{ request()->routeIs('admin.purchases.*') ? 'active' : '' }}"
                    href="{{ route('admin.purchases.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/><path d="M12 5v6M9 8h6"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"></path>
+                            <circle cx="10" cy="21" r="1"></circle>
+                            <circle cx="18" cy="21" r="1"></circle>
+                            <path d="M12 5v6M9 8h6"></path>
+                        </svg>
+                    </span>
                     Pembelian
                 </a>
 
                 <a class="nav-link {{ request()->routeIs('admin.sales.*') ? 'active' : '' }}"
                    href="{{ route('admin.sales.index') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 6-7"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 3v18h18"></path>
+                            <path d="m7 14 4-4 4 3 6-7"></path>
+                        </svg>
+                    </span>
                     Penjualan
+                </a>
+
+                {{-- MENU LAPORAN --}}
+                <a href="{{ route('admin.reports.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 19V5"></path>
+                            <path d="M4 19h17"></path>
+                            <path d="m7 15 4-4 3 2 5-6"></path>
+                        </svg>
+                    </span>
+                    <span>Laporan</span>
                 </a>
             </div>
 
@@ -698,7 +764,12 @@
 
                 <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}"
                    href="{{ route('profile.edit') }}">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21a8 8 0 0 1 16 0"></path>
+                        </svg>
+                    </span>
                     Profil Saya
                 </a>
             </div>
@@ -709,9 +780,14 @@
                 <div class="avatar">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </div>
+
                 <div style="min-width:0">
-                    <div class="account-name">{{ auth()->user()->name ?? 'Administrator' }}</div>
-                    <div class="account-role">{{ ucfirst(auth()->user()->role ?? 'admin') }} Veloura</div>
+                    <div class="account-name">
+                        {{ auth()->user()->name ?? 'Administrator' }}
+                    </div>
+                    <div class="account-role">
+                        {{ ucfirst(auth()->user()->role ?? 'admin') }} Veloura
+                    </div>
                 </div>
             </div>
 
@@ -726,18 +802,23 @@
 
     <main class="main">
         <header class="topbar">
-            <button class="mobile-menu" type="button" id="mobileMenu"
-                    aria-label="Buka navigasi" aria-expanded="false">
+            <button class="mobile-menu"
+                    type="button"
+                    id="mobileMenu"
+                    aria-label="Buka navigasi"
+                    aria-expanded="false">
                 <svg width="20" height="20" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round">
-                    <path d="M4 6h16M4 12h16M4 18h16"/>
+                     fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round">
+                    <path d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
 
             <div>
                 <h1 class="page-heading">@yield('page-heading', 'Dashboard')</h1>
-                <div class="muted">@yield('page-description', 'Kelola operasional Veloura dengan mudah.')</div>
+                <div class="muted">
+                    @yield('page-description', 'Kelola operasional Veloura dengan mudah.')
+                </div>
             </div>
 
             <div class="topbar-user">
@@ -745,8 +826,12 @@
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </div>
                 <div class="topbar-user-info">
-                    <div class="topbar-user-name">{{ auth()->user()->name ?? 'Veloura Admin' }}</div>
-                    <div class="role-label">{{ ucfirst(auth()->user()->role ?? 'admin') }}</div>
+                    <div class="topbar-user-name">
+                        {{ auth()->user()->name ?? 'Veloura Admin' }}
+                    </div>
+                    <div class="role-label">
+                        {{ ucfirst(auth()->user()->role ?? 'admin') }}
+                    </div>
                 </div>
             </div>
         </header>
@@ -798,9 +883,12 @@
             overlay?.addEventListener('click', () => setSidebar(false));
 
             document.addEventListener('keydown', event => {
-                if (event.key === 'Escape') setSidebar(false);
+                if (event.key === 'Escape') {
+                    setSidebar(false);
+                }
             });
         })();
     </script>
 </body>
+
 </html>

@@ -15,6 +15,11 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Staff\ProfileController as StaffProfileController;
+use App\Http\Controllers\Staff\CustomerOrderController;
+use App\Http\Controllers\Staff\SaleController as StaffSaleController;
+use App\Http\Controllers\Staff\PurchaseController as StaffPurchaseController;
+use App\Http\Controllers\Admin\ReportController;
+
 
 
 Route::get('/', function () {
@@ -71,7 +76,17 @@ Route::middleware(['auth', 'active.account'])
         Route::resource('products', ProductController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('purchases', PurchaseController::class);
-        Route::resource('sales', SaleController::class);
+Route::get('/sales', [SaleController::class, 'index'])
+    ->name('sales.index');
+
+Route::get('/sales/{sale}', [SaleController::class, 'show'])
+    ->name('sales.show');
+
+Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])
+    ->name('sales.destroy');
+    
+Route::get('/reports', [ReportController::class, 'index'])
+    ->name('reports.index');        
     });
 /*
 |--------------------------------------------------------------------------
@@ -107,29 +122,80 @@ Route::middleware(['auth', 'active.account'])->group(function () {
 | Dashboard Staff
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth', 'active.account'])
     ->prefix('staff')
     ->name('staff.')
     ->group(function () {
-        Route::get('/dashboard', [StaffDashboardController::class, 'index'])
-            ->name('dashboard');
+        // 1. Dashboard
+        Route::get('/dashboard', [
+            StaffDashboardController::class,
+            'index'
+        ])->name('dashboard');
 
-        Route::get('/products', [StaffDashboardController::class, 'products'])
-            ->name('products.index');
+        // 2. Produk & Stok
+        Route::get('/products', [
+            StaffDashboardController::class,
+            'products'
+        ])->name('products.index');
 
-        Route::get('/sales', [StaffDashboardController::class, 'sales'])
-            ->name('sales.index');
+        // 3. Penjualan langsung
+        Route::get('/sales', [
+            StaffSaleController::class,
+            'index'
+        ])->name('sales.index');
 
-        Route::get('/transactions', [StaffDashboardController::class, 'transactions'])
-            ->name('transactions.index');
-        
-        Route::get('/profile', [StaffProfileController::class, 'edit'])
-            ->name('profile');
+        Route::post('/sales', [
+            StaffSaleController::class,
+            'store'
+        ])->name('sales.store');
 
-        Route::patch('/profile', [StaffProfileController::class, 'update'])
-            ->name('profile.update');
-        });
+        // 4. Pembelian / Stock-in
+        Route::get('/purchases', [
+            StaffPurchaseController::class,
+            'index'
+        ])->name('purchases.index');
 
+        Route::post('/purchases', [
+            StaffPurchaseController::class,
+            'store'
+        ])->name('purchases.store');
+
+        // 5. Pesanan Customer
+        Route::get('/customer-orders', [
+            CustomerOrderController::class,
+            'index'
+        ])->name('customer-orders.index');
+
+        Route::get('/customer-orders/{id}', [
+            CustomerOrderController::class,
+            'show'
+        ])->whereNumber('id')
+          ->name('customer-orders.show');
+
+        Route::patch('/customer-orders/{id}', [
+            CustomerOrderController::class,
+            'update'
+        ])->whereNumber('id')
+          ->name('customer-orders.update');
+
+        // 6. Riwayat Transaksi
+        Route::get('/transactions', [
+            StaffDashboardController::class,
+            'transactions'
+        ])->name('transactions.index');
+
+        // Profil Staff
+        Route::get('/profile', [
+            StaffProfileController::class,
+            'edit'
+        ])->name('profile');
+
+        Route::patch('/profile', [
+            StaffProfileController::class,
+            'update'
+        ])->name('profile.update');
+    });
 
 /*
 |--------------------------------------------------------------------------
