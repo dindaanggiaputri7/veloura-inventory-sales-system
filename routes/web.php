@@ -1,10 +1,15 @@
 
 <?php
 
+// controller pengelolaan profil pengguna
 use App\Http\Controllers\ProfileController;
+// controller akun pengguna 
 use App\Http\Controllers\UserController;
+//mengambill informasi pengguna login dan autentikasi logout
 use Illuminate\Support\Facades\Auth;
+// alamat halaman website
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Product;
 use App\Http\Controllers\Customer\CustomerController;
