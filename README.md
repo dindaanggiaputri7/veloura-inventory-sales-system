@@ -30,7 +30,8 @@ Screenshot berikut menunjukkan tampilan antarmuka aplikasi Veloura.
 
 Halaman utama memperkenalkan Veloura Parfum serta menyediakan navigasi menuju koleksi, katalog produk, informasi brand, login, dan pendaftaran.
 
-![Halaman utama Veloura](docs/screenshots/01-halaman-utama.png)
+<img width="1350" height="635" alt="image" src="https://github.com/user-attachments/assets/3b5885f2-f518-44b0-8d9d-898aeb7ce980" />
+
 
 ### 2. Koleksi Parfum
 
