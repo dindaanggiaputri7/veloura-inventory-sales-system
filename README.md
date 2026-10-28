@@ -37,49 +37,57 @@ Halaman utama memperkenalkan Veloura Parfum serta menyediakan navigasi menuju ko
 
 Bagian koleksi menampilkan pilihan kategori aroma untuk membantu Customer menjelajahi koleksi parfum.
 
-![Bagian koleksi parfum](docs/screenshots/02-koleksi-parfum.png)
+<img width="1349" height="631" alt="image" src="https://github.com/user-attachments/assets/77c8c767-ed62-4192-8125-c8430883ec9f" />
+
 
 ### 3. Katalog Produk
 
 Katalog menampilkan produk parfum, gambar, kode produk, nama, dan deskripsi singkat untuk membantu Customer mengenali produk yang tersedia.
 
-![Katalog produk Veloura](docs/screenshots/03-katalog-produk.png)
+<img width="1349" height="626" alt="image" src="https://github.com/user-attachments/assets/ed68a3ed-b904-4b59-b996-afa0a8e38d69" />
+
 
 ### 4. Cerita Veloura
 
 Bagian ini menampilkan identitas dan cerita brand sebagai bagian dari halaman utama.
 
-![Bagian cerita Veloura](docs/screenshots/04-cerita-veloura.png)
+<img width="1357" height="636" alt="image" src="https://github.com/user-attachments/assets/29eb1da9-f1ee-47af-bc96-eb04d51e1a33" />
+
 
 ### 5. Halaman Login
 
 Halaman login digunakan pengguna untuk masuk dengan email dan password yang terdaftar.
 
-![Halaman login Veloura](docs/screenshots/05-login.png)
+<img width="1350" height="638" alt="image" src="https://github.com/user-attachments/assets/726c642f-a69b-45b8-a87a-560524325eca" />
+
 
 ### 6. Halaman Pendaftaran
 
 Halaman pendaftaran menyediakan formulir pembuatan akun baru sesuai dengan mekanisme registrasi yang tersedia pada aplikasi.
 
-![Halaman pendaftaran Veloura](docs/screenshots/06-daftar-akun.png)
+<img width="1354" height="633" alt="image" src="https://github.com/user-attachments/assets/9b7aae9d-db33-42c3-aa99-ce9e48c8244f" />
+
 
 ### 7. Dashboard Admin
 
 Dashboard Admin menampilkan ringkasan operasional, antara lain total produk, stok menipis, pembelian, dan penjualan. Menu di sisi halaman menyediakan akses ke pengelolaan data sesuai hak akses Admin.
 
-![Dashboard Admin](docs/screenshots/07-dashboard-admin.png)
+<img width="1349" height="637" alt="image" src="https://github.com/user-attachments/assets/ef908db6-5428-47cc-8336-ffd0ab73e7b4" />
+
 
 ### 8. Dashboard Staff
 
 Dashboard Staff merangkum informasi inventaris, penjualan, pembelian stok, dan pesanan Customer yang perlu diproses.
 
-![Dashboard Staff](docs/screenshots/08-dashboard-staff.png)
+<img width="1352" height="632" alt="image" src="https://github.com/user-attachments/assets/2ff077c5-af4c-4bf6-ac78-0301cd8c7a40" />
+
 
 ### 9. Dashboard Customer
 
 Dashboard Customer menyediakan akses ke katalog produk, keranjang, pesanan, riwayat transaksi, dan profil pengguna.
 
-![Dashboard Customer](docs/screenshots/09-dashboard-customer.png)
+<img width="1345" height="636" alt="image" src="https://github.com/user-attachments/assets/ce1268a1-fe9b-4f24-8526-7156a2d49bb1" />
+
 
 ## Fitur Utama
 
