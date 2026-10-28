@@ -14,37 +14,90 @@ class PurchaseController extends Controller
 {
     private function ensureStaff(): void
     {
-        abort_unless(auth()->user()?->role === 'staff', 403);
+        abort_unless(
+            auth()->user()?->role === 'staff',
+            403
+        );
     }
 
+    /**
+     * Menampilkan form dan riwayat pembelian.
+     */
     public function index()
     {
         $this->ensureStaff();
-        $suppliers = Supplier::orderBy('name')->get();
-        $products = Product::orderBy('name')->get();
-        $purchases = Purchase::with('supplier')->withCount('items')
-            ->orderByDesc('purchase_date')->orderByDesc('id')->paginate(10);
 
-        return view('staff.purchases.index', compact('suppliers', 'products', 'purchases'));
+        $suppliers = Supplier::orderBy('name')->get();
+
+        $products = Product::orderBy('name')->get();
+
+        $purchases = Purchase::with('supplier')
+            ->withCount('items')
+            ->orderByDesc('purchase_date')
+            ->orderByDesc('id')
+            ->paginate(10);
+
+        return view('staff.purchases.index', compact(
+            'suppliers',
+            'products',
+            'purchases'
+        ));
     }
 
+    /**
+     * Menyimpan pembelian dan menambah stok.
+     * Harga selalu diambil dari database, bukan dari input browser.
+     */
     public function store(Request $request)
     {
         $this->ensureStaff();
+
         $data = $request->validate([
-            'supplier_id' => ['required', 'exists:suppliers,id'],
-            'purchase_date' => ['required', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'integer', 'distinct', 'exists:products,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:4294967295'],
-            'items.*.unit_price' => ['required', 'numeric', 'min:0', 'max:9999999999'],
+            'supplier_id' => [
+                'required',
+                'exists:suppliers,id',
+            ],
+
+            'purchase_date' => [
+                'required',
+                'date',
+            ],
+
+            'notes' => [
+                'nullable',
+                'string',
+                'max:2000',
+            ],
+
+            'items' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'items.*.product_id' => [
+                'required',
+                'integer',
+                'distinct',
+                'exists:products,id',
+            ],
+
+            'items.*.quantity' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:4294967295',
+            ],
         ]);
 
         DB::transaction(function () use ($data) {
             $purchase = Purchase::create([
                 'supplier_id' => $data['supplier_id'],
-                'purchase_number' => 'PB-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4)),
+
+                'purchase_number' =>
+                    'PB-' . now()->format('YmdHis')
+                    . '-' . Str::upper(Str::random(4)),
+
                 'purchase_date' => $data['purchase_date'],
                 'total_amount' => 0,
                 'status' => 'completed',
@@ -52,25 +105,45 @@ class PurchaseController extends Controller
             ]);
 
             $total = 0;
+
             foreach ($data['items'] as $line) {
-                $product = Product::whereKey($line['product_id'])->lockForUpdate()->firstOrFail();
+                // Ambil produk terkini dan kunci selama transaksi.
+                $product = Product::whereKey($line['product_id'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
                 $quantity = (int) $line['quantity'];
-                $price = (float) $line['unit_price'];
+
+                // Harga beli diambil langsung dari database.
+                $price = (float) $product->purchase_price;
+
                 $subtotal = round($quantity * $price, 2);
 
+                // Stok bertambah setelah pembelian dicatat.
                 $product->increment('stock', $quantity);
+
+                // Simpan rincian transaksi.
                 $purchase->items()->create([
                     'product_id' => $product->id,
                     'quantity' => $quantity,
                     'unit_price' => $price,
                     'subtotal' => $subtotal,
                 ]);
+
                 $total += $subtotal;
             }
 
-            $purchase->update(['total_amount' => round($total, 2)]);
+            // Simpan total keseluruhan pembelian.
+            $purchase->update([
+                'total_amount' => round($total, 2),
+            ]);
         });
 
-        return redirect()->route('staff.purchases.index')->with('success', 'Pembelian tersimpan dan stok bertambah.');
+        return redirect()
+            ->route('staff.purchases.index')
+            ->with(
+                'success',
+                'Pembelian berhasil disimpan dan stok produk bertambah.'
+            );
     }
 }
